@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+    @page {
+        size: A4;
+        margin: 1.5cm;
+    }
+
+    body {
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+@keyframes avatar-legend-aura {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.96);
+    }
+
+    50% {
+        opacity: 0.95;
+        transform: scale(1.06);
+    }
+}
+
+@keyframes avatar-shimmer {
+    0% {
+        transform: translateX(-140%) rotate(25deg);
+    }
+
+    45%,
+    100% {
+        transform: translateX(180%) rotate(25deg);
+    }
+}
+
+.animate-avatar-legend-aura {
+    animation: avatar-legend-aura 3s ease-in-out infinite;
+}
+
+.animate-avatar-shimmer {
+    animation: avatar-shimmer 3.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .animate-avatar-legend-aura,
+    .animate-avatar-shimmer {
+        animation: none;
+    }
+}
