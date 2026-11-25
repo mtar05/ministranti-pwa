@@ -49,55 +49,6 @@ const nazevKategorie = (kat: string) => {
     return "Vedoucí";
 };
 
-const zkomprimujObrazek = (soubor: File): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        const url = URL.createObjectURL(soubor);
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-            const size = 256;
-            const canvas = document.createElement("canvas");
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext("2d");
-            if (!ctx) {
-                reject(new Error("Nepodařilo se připravit plátno."));
-                return;
-            }
-
-            const minStrana = Math.min(img.width, img.height);
-            const sx = (img.width - minStrana) / 2;
-            const sy = (img.height - minStrana) / 2;
-
-            ctx.drawImage(img, sx, sy, minStrana, minStrana, 0, 0, size, size);
-
-            canvas.toBlob(
-                (blob) => {
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        canvas.toBlob(
-                            (fallback) =>
-                                fallback
-                                    ? resolve(fallback)
-                                    : reject(new Error("Komprese selhala.")),
-                            "image/jpeg",
-                            0.8,
-                        );
-                    }
-                },
-                "image/webp",
-                0.8,
-            );
-        };
-        img.onerror = () => {
-            URL.revokeObjectURL(url);
-            reject(new Error("Neplatný obrázek."));
-        };
-        img.src = url;
-    });
-};
-
 function KartaOdznaku({
     odznak,
     onVybrat,
@@ -107,6 +58,10 @@ function KartaOdznaku({
 }) {
     const [chybaObrazku, setChybaObrazku] = useState(false);
     const procenta = Math.round((odznak.aktualni / odznak.cil) * 100);
+
+    useEffect(() => {
+        setChybaObrazku(false);
+    }, [odznak.obrazek]);
 
     return (
         <button
@@ -148,12 +103,6 @@ function KartaOdznaku({
                             <Lock size={34} className="text-slate-400" />
                         )}
                     </div>
-                )}
-
-                {!odznak.odemceno && (
-                    <span className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-white border border-slate-200 shadow-xs flex items-center justify-center text-slate-400">
-                        <Lock size={14} />
-                    </span>
                 )}
             </div>
 
